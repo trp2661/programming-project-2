@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+       #map {
+        height: 400px;
+        width: 100%;
+       }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+	<button id="myLocation" onclick="getLocation()">Get My Location</button><br>
+	Start:<br>
+	Enter Address:<br>
+		<input type="text" id="startAddress"><br>
+		Enter City/State (Only place a space between the city and state):<br>
+		<input type="text" id="startCity"><br>
+		Destination:<br>
+		Enter Address:<br>
+		<input type="text" id="endAddress"><br>
+		Enter City/State (Only place a space between the city and state):<br>
+		<input type="text" id="endCity"><br>
+		<button id="driver">Get Location</button>
+		<div id="locationDiv"></div><br>
+		<p id="locationDiv1"></p>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+	var currentLat;
+	var currentLong;
+	var map;
+	var addressLat;
+	var addressLat1;
+	var addressLong1;
+	var addressLong;
+	var street;
+	var street1;
+	var cityState;
+	var cityState1;
+	var address;
+	var address1;
+	var apiKey = '8875ac2cdffdcacdc6d814cd378854cc7c485fd';
+      function initMap() {
+        var vb = {lat:  36.863140, lng: -75.9780};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: vb
+        });
+		}
+      var directionsDisplay = new google.maps.DirectionsRenderer({
+          map: map
+        });
+		
+		// Set destination, origin and travel mode.
+        var request = {
+          destination: addressLat1 + addressLong1,
+          origin: {lat: currentLat, lng: currentLong},
+          travelMode: 'DRIVING'
+        };
+		
+		// Pass the directions request to the directions service.
+        var directionsService = new google.maps.DirectionsService();
+        directionsService.route(request, function(response, status) {
+          if (status == 'OK') {
+            // Display the route on the map.
+            directionsDisplay.setDirections(response);
+          }
+        });
+	  
+	  
+	  function getLocation()
+	  {
+		navigator.geolocation.getCurrentPosition(showLocation);
+			function showLocation(position) {
+			currentLat = position.coords.latitude;
+			currentLong = position.coords.longitude;
+			localStorage.setItem(currentLat,currentLong);
+			}
+
+		}
+		
+		$("#driver").click(function(event){
+		street = $("#startAddress").val();
+		cityState = $("#startCity").val();
+		street1=$("#endAddress").val();
+		cityState1=$("#endCity").val();
+		address = street + ', ' + cityState;
+		$.getJSON('https://api.geocod.io/v1/geocode?q='+ encodeURIComponent(address) +'&api_key=' + 				encodeURIComponent(apiKey), function(data) {
+		addressLat=data.results[0].location.lat;
+		addressLong=data.results[0].location.lng;
+		document.getElementById("locationDiv").innerHTML = JSON.stringify(data.results[0]);
+		}); //end getJson success function
+		
+		address1= street1 + ', ' + cityState1;
+		$.getJSON('https://api.geocod.io/v1/geocode?q='+ encodeURIComponent(address1) +'&api_key=' + 				encodeURIComponent(apiKey), function(data) {
+		addressLat1=data.results[0].location.lat;
+		addressLong1=data.results[0].location.lat;
+		document.getElementById("locationDiv1").innerHTML = JSON.stringify(data.results[0]);
+		}); //end getJson success function
+		
+		}); //end .click
+		
+		
+		
+		localStorage.setItem(currentLat,currentLong);
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBA5GZMvzHQTh_YmSQMKPtclwzbZPTKBnw&callback=initMap">
+    </script>
+  </body>
+</html>
