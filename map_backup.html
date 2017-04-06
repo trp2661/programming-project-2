@@ -94,7 +94,7 @@
 					$.getJSON('https://api.geocod.io/v1/geocode?q='+ encodeURIComponent(address1) +'&api_key=' + encodeURIComponent(apiKey), function(data) {
 						addressLat1=data.results[0].location.lat;
 						addressLong1=data.results[0].location.lng;						
-						document.getElementById("idk").innerHTMl=addressLat1 +" " +addressLong1;
+						
 					}); //end getJson success function
 					
 
